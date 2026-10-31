@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaskMaster | Project Workflow & Dependency Manager</title>
+  <meta name="description" content="A clean, deliberate software workspace for project management with automated task dependency resolution.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Top App Navigation -->
+  <header class="app-topbar">
+    <div class="topbar-container">
+      <div class="brand-group">
+        <div class="brand-icon lighthouse-beacon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L8 9h8l-4-7z"></path>
+            <path d="M9 9v13h6V9"></path>
+            <path d="M6 22h12"></path>
+            <path d="M3 13l3-1"></path>
+            <path d="M21 13l-3-1"></path>
+            <circle cx="12" cy="6" r="1" fill="currentColor"></circle>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">TaskMaster</span>
+          <span class="brand-badge">Fyrtårn Engine</span>
+        </div>
+      </div>
+
+      <!-- Quick Global Stats -->
+      <div class="global-stats-summary" id="globalStatsSummary">
+        <span class="stat-pill">
+          <span class="pill-dot"></span>
+          <span id="globalSummaryText">Loading workspace...</span>
+        </span>
+      </div>
+
+      <div class="topbar-actions">
+        <!-- New Project Button -->
+        <button id="openProjectModalBtn" class="btn btn-secondary btn-sm" title="Create a new project">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          <span>New Project</span>
+        </button>
+
+        <!-- New Task Button -->
+        <button id="openTaskModalBtn" class="btn btn-primary btn-sm" title="Add task to current project">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          <span>New Task</span>
+        </button>
+
+        <!-- Theme Toggle -->
+        <button id="themeToggleBtn" class="btn-icon" aria-label="Toggle dark/light theme" title="Toggle Theme">
+          <svg id="moonIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <svg id="sunIcon" class="hidden" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="app-layout">
+    <!-- Main Content Area -->
+    <main class="content-container">
+      <!-- Project Selection & Progress Banner -->
+      <section class="project-header-panel">
+        <div class="project-selector-strip" id="projectSelectorStrip" role="tablist" aria-label="Projects">
+          <button class="project-tab active" data-project="all">
+            <span class="project-color-dot" style="background-color: #64748b;"></span>
+            <span>All Projects</span>
+            <span class="tab-count" id="allProjectsCount">0</span>
+          </button>
+          <!-- Dynamic Project Tabs inserted here -->
+        </div>
+
+        <!-- Active Project Details & Workflow Metrics -->
+        <div class="project-meta-card" id="projectMetaCard">
+          <div class="meta-row-main">
+            <div>
+              <div class="project-title-row">
+                <h1 class="project-title" id="activeProjectTitle">All Projects Overview</h1>
+                <span class="project-progress-badge" id="activeProjectPct">0% Completed</span>
+              </div>
+              <p class="project-description" id="activeProjectDesc">Consolidated view across all workspace projects and automated dependency chains.</p>
+            </div>
+            
+            <div class="project-actions-group">
+              <button id="deleteActiveProjectBtn" class="btn btn-ghost btn-sm text-danger hidden" title="Delete current project">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path>
+                </svg>
+                <span>Delete Project</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Progress Bar & Status Pipeline Breakdown -->
+          <div class="workflow-progress-wrapper">
+            <div class="workflow-progress-bar">
+              <div class="progress-segment seg-completed" id="progCompleted" style="width: 0%;" title="Completed"></div>
+              <div class="progress-segment seg-in-progress" id="progInProgress" style="width: 0%;" title="In Progress"></div>
+              <div class="progress-segment seg-blocked" id="progBlocked" style="width: 0%;" title="Blocked"></div>
+              <div class="progress-segment seg-todo" id="progTodo" style="width: 0%;" title="To Do"></div>
+            </div>
+
+            <!-- Workflow Status Metrics Row -->
+            <div class="workflow-metrics-row">
+              <div class="metric-item">
+                <span class="status-indicator-dot dot-todo"></span>
+                <span class="metric-label">To Do:</span>
+                <span class="metric-value" id="metricTodo">0</span>
+              </div>
+              <div class="metric-item">
+                <span class="status-indicator-dot dot-in-progress"></span>
+                <span class="metric-label">In Progress:</span>
+                <span class="metric-value" id="metricInProgress">0</span>
+              </div>
+              <div class="metric-item">
+                <span class="status-indicator-dot dot-blocked"></span>
+                <span class="metric-label">Blocked:</span>
+                <span class="metric-value text-amber" id="metricBlocked">0</span>
+              </div>
+              <div class="metric-item">
+                <span class="status-indicator-dot dot-completed"></span>
+                <span class="metric-label">Completed:</span>
+                <span class="metric-value text-emerald" id="metricCompleted">0</span>
+              </div>
+              <div class="metric-item metric-total">
+                <span class="metric-label">Total:</span>
+                <span class="metric-value" id="metricTotal">0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Filter Controls & Search Toolbar -->
+      <section class="toolbar-section">
+        <!-- Status Filter Tabs -->
+        <div class="status-filter-group" role="tablist" aria-label="Filter by Status">
+          <button class="status-btn active" data-status="all">
+            <span>All Tasks</span>
+            <span class="btn-count" id="countAll">0</span>
+          </button>
+          <button class="status-btn" data-status="todo">
+            <span class="status-indicator-dot dot-todo"></span>
+            <span>To Do</span>
+            <span class="btn-count" id="countTodo">0</span>
+          </button>
+          <button class="status-btn" data-status="in_progress">
+            <span class="status-indicator-dot dot-in-progress"></span>
+            <span>In Progress</span>
+            <span class="btn-count" id="countInProgress">0</span>
+          </button>
+          <button class="status-btn" data-status="blocked">
+            <span class="status-indicator-dot dot-blocked"></span>
+            <span>Blocked</span>
+            <span class="btn-count" id="countBlocked">0</span>
+          </button>
+          <button class="status-btn" data-status="completed">
+            <span class="status-indicator-dot dot-completed"></span>
+            <span>Completed</span>
+            <span class="btn-count" id="countCompleted">0</span>
+          </button>
+        </div>
+
+        <!-- Search & Sort Controls -->
+        <div class="filter-controls-row">
+          <div class="search-input-wrap">
+            <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input 
+              type="search" 
+              id="searchInput" 
+              placeholder="Filter tasks by name or notes..." 
+              aria-label="Filter tasks"
+              class="form-input search-input"
+            >
+          </div>
+
+          <div class="select-controls-wrap">
+            <!-- Category Filter -->
+            <select id="categoryFilterSelect" class="form-select filter-select" aria-label="Filter by Category">
+              <option value="all">All Categories</option>
+            </select>
+
+            <!-- Priority Filter -->
+            <select id="priorityFilterSelect" class="form-select filter-select" aria-label="Filter by Priority">
+              <option value="all">All Priorities</option>
+              <option value="High">High</option>
+              <option value="Medium">Medium</option>
+              <option value="Low">Low</option>
+            </select>
+
+            <!-- Sort By -->
+            <select id="sortSelect" class="form-select filter-select" aria-label="Sort tasks">
+              <option value="created_desc">Newest First</option>
+              <option value="status">By Status</option>
+              <option value="priority">By Priority</option>
+              <option value="due_date">By Due Date</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- Task Dependency Explanation Note -->
+      <section class="dependency-guidance-banner" id="dependencyGuidance">
+        <div class="guidance-content">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+          <span><strong>Automated Dependencies Active:</strong> Tasks automatically lock to <strong class="text-amber">Blocked</strong> until all prerequisite tasks are marked completed. Marking a prerequisite complete automatically unblocks downstream tasks.</span>
+        </div>
+      </section>
+
+      <!-- Task List Container -->
+      <section class="task-list-section">
+        <!-- Loading State -->
+        <div id="loadingState" class="state-box hidden">
+          <div class="loader-spinner"></div>
+          <p class="state-msg">Syncing tasks and dependencies...</p>
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="state-box hidden">
+          <div class="empty-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+          </div>
+          <h3 class="state-heading" id="emptyHeading">No tasks found</h3>
+          <p class="state-sub" id="emptySub">Get started by creating a task or adjusting active filters.</p>
+          <button id="emptyActionBtn" class="btn btn-secondary btn-sm">Create New Task</button>
+        </div>
+
+        <!-- Task Items -->
+        <div id="taskList" class="task-list" role="list">
+          <!-- Populated by app.js -->
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Create Task Modal -->
+  <div id="taskModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="taskModalTitle">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h3 id="taskModalTitle" class="modal-title">New Task</h3>
+        <button id="closeTaskModalBtn" class="btn-icon-subtle" aria-label="Close modal">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <form id="taskForm" class="modal-form" autocomplete="off">
+        <input type="hidden" id="taskFormMode" value="create">
+        <input type="hidden" id="editingTaskId" value="">
+
+        <!-- Title -->
+        <div class="form-group">
+          <label for="modalTaskTitle" class="form-label">Task Title <span class="required-mark">*</span></label>
+          <input 
+            type="text" 
+            id="modalTaskTitle" 
+            required 
+            maxlength="200" 
+            placeholder="e.g. Deploy Authentication & JWT Service" 
+            class="form-input"
+          >
+        </div>
+
+        <!-- Description / Notes -->
+        <div class="form-group">
+          <label for="modalTaskDesc" class="form-label">Description / Notes</label>
+          <textarea id="modalTaskDesc" rows="2" placeholder="Implementation details or acceptance criteria..." class="form-input form-textarea"></textarea>
+        </div>
+
+        <div class="form-grid-2">
+          <!-- Project -->
+          <div class="form-group">
+            <label for="modalTaskProject" class="form-label">Project <span class="required-mark">*</span></label>
+            <select id="modalTaskProject" required class="form-select">
+              <!-- Dynamically populated -->
+            </select>
+          </div>
+
+          <!-- Workflow Status -->
+          <div class="form-group">
+            <label for="modalTaskStatus" class="form-label">Initial Status</label>
+            <select id="modalTaskStatus" class="form-select">
+              <option value="todo">To Do</option>
+              <option value="in_progress">In Progress</option>
+              <option value="blocked">Blocked</option>
+              <option value="completed">Completed</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-grid-3">
+          <!-- Priority -->
+          <div class="form-group">
+            <label for="modalTaskPriority" class="form-label">Priority</label>
+            <select id="modalTaskPriority" class="form-select">
+              <option value="High">High</option>
+              <option value="Medium" selected>Medium</option>
+              <option value="Low">Low</option>
+            </select>
+          </div>
+
+          <!-- Category -->
+          <div class="form-group">
+            <label for="modalTaskCategory" class="form-label">Category</label>
+            <select id="modalTaskCategory" class="form-select">
+              <option value="">No Category</option>
+            </select>
+          </div>
+
+          <!-- Due Date -->
+          <div class="form-group">
+            <label for="modalTaskDueDate" class="form-label">Due Date</label>
+            <input type="date" id="modalTaskDueDate" class="form-input">
+          </div>
+        </div>
+
+        <!-- Task Dependencies Section -->
+        <div class="form-group dependency-picker-group">
+          <div class="dependency-picker-header">
+            <label class="form-label">Prerequisites (Task Dependencies)</label>
+            <span class="form-hint">This task will automatically be <strong>Blocked</strong> until selected prerequisites are marked completed.</span>
+          </div>
+          <div class="dependency-checkbox-list" id="dependencyCheckboxList">
+            <span class="empty-deps-text">Select a project to choose prerequisites</span>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" id="cancelTaskModalBtn" class="btn btn-secondary">Cancel</button>
+          <button type="submit" id="saveTaskBtn" class="btn btn-primary">Save Task</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Create Project Modal -->
+  <div id="projectModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="projectModalTitle">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h3 id="projectModalTitle" class="modal-title">New Project</h3>
+        <button id="closeProjectModalBtn" class="btn-icon-subtle" aria-label="Close modal">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <form id="projectForm" class="modal-form" autocomplete="off">
+        <div class="form-group">
+          <label for="newProjectName" class="form-label">Project Name <span class="required-mark">*</span></label>
+          <input 
+            type="text" 
+            id="newProjectName" 
+            required 
+            maxlength="60" 
+            placeholder="e.g. Mobile Application v2" 
+            class="form-input"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="newProjectDesc" class="form-label">Description</label>
+          <textarea id="newProjectDesc" rows="2" placeholder="Key goals, deliverables, or milestones..." class="form-input form-textarea"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Project Color Marker</label>
+          <div class="color-picker-row" id="projectColorPicker">
+            <button type="button" class="color-dot-opt active" data-color="#2563eb" style="background:#2563eb;"></button>
+            <button type="button" class="color-dot-opt" data-color="#059669" style="background:#059669;"></button>
+            <button type="button" class="color-dot-opt" data-color="#7c3aed" style="background:#7c3aed;"></button>
+            <button type="button" class="color-dot-opt" data-color="#e11d48" style="background:#e11d48;"></button>
+            <button type="button" class="color-dot-opt" data-color="#d97706" style="background:#d97706;"></button>
+            <button type="button" class="color-dot-opt" data-color="#0891b2" style="background:#0891b2;"></button>
+          </div>
+          <input type="hidden" id="selectedProjectColor" value="#2563eb">
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" id="cancelProjectModalBtn" class="btn btn-secondary">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Project</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toastContainer" class="toast-stack" aria-live="polite"></div>
+
+  <!-- Scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+{
+  "name": "taskmaster-workflow-engine",
+  "version": "1.0.0",
+  "description": "Full-stack project management & automated task dependency resolution engine with Scandinavian Awwwards-grade UI",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "generate-report": "node generate_docx.js"
+  },
+  "keywords": [
+    "task-management",
+    "workflow-engine",
+    "dependency-graph",
+    "dag",
+    "sqlite",
+    "express",
+    "scandinavian-design"
+  ],
+  "type": "commonjs",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "docx": "^9.15.0",
+    "express": "^5.3.0"
+  }
+}
