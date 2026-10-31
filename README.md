@@ -82,7 +82,7 @@ internship-proj/
 │   │   └── tasks.js              # Tasks & dependency resolution logic
 │   └── db.js                     # SQLite schema, indices & status sync helpers
 ├── data/                         # SQLite database storage (gitignored)
-├── generate_docx.js              # Academic project report generator
+├── generate_docx.js              # Project documentation & report generator
 ├── package.json                  # Dependencies and scripts
 ├── server.js                     # Express 5 application bootstrap
 └── README.md                     # Documentation
@@ -134,17 +134,6 @@ internship-proj/
 | `POST` | `/api/categories` | Create custom category tag |
 | `DELETE` | `/api/categories/:id` | Delete category and detach associated tasks |
 | `GET` | `/api/stats` | Global workspace summary and completion rate |
-
----
-
-## 🎓 Viva & Academic Defense Talking Points
-
-* **Why SQLite over NoSQL (MongoDB)?**  
-  Task dependencies represent a Directed Acyclic Graph (DAG) with strict referential constraints. SQLite guarantees atomic multi-table updates, foreign key enforcement, and eliminates orphaned dependency states.
-* **How are deadlocks prevented?**  
-  A Depth-First Search (DFS) queue traversal checks proposed dependencies for cycles before saving to the database. Circular definitions are immediately rejected with a `400 Bad Request`.
-* **Why `node:sqlite`?**  
-  Eliminates fragile native compilation bindings (`node-gyp`), decreases Docker image footprint, and delivers deterministic zero-overhead synchronous execution.
 
 ---
 
